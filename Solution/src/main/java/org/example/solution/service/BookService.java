@@ -1,6 +1,7 @@
 package org.example.solution.service;
 
 import org.example.solution.dto.BookDto;
+import org.example.solution.dto.BookSearchCriteria;
 
 import java.util.List;
 
@@ -29,4 +30,7 @@ public interface BookService {
     List<BookDto> getBooksByTitleContaining(String titlePart);
     
     List<BookDto> getAvailableBooksWithMinRating(Integer minRating);
+
+    // בתוך ממשק BookService
+    List<BookDto> searchBooks(BookSearchCriteria criteria);
 }

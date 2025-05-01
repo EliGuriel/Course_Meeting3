@@ -3,12 +3,17 @@ package org.example.solution.service;
 
 import org.example.solution.collection.Book;
 import org.example.solution.dto.BookDto;
+import org.example.solution.dto.BookSearchCriteria;
 import org.example.solution.exception.ResourceNotFoundException;
 import org.example.solution.mappper.BookMapper;
 import org.example.solution.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,11 +21,13 @@ public class BookServiceImpl implements BookService {
     
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
+    private final MongoTemplate mongoTemplate;
     
     @Autowired
-    public BookServiceImpl(BookRepository bookRepository, BookMapper bookMapper) {
+    public BookServiceImpl(BookRepository bookRepository, BookMapper bookMapper, MongoTemplate mongoTemplate) {
         this.bookRepository = bookRepository;
         this.bookMapper = bookMapper;
+        this.mongoTemplate = mongoTemplate;
     }
     
     @Override
@@ -105,5 +112,58 @@ public class BookServiceImpl implements BookService {
     private Book getBookEntityById(String id) {
         return bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
+    }
+
+    @Override
+    public List<BookDto> searchBooks(BookSearchCriteria criteria) {
+        // יצירת אובייקט קריטריונים ריק
+        Criteria allCriteria = new Criteria();
+        // ליצור רשימה של קריטריונים שנוסיף אליה כל תנאי בנפרד
+        List<Criteria> criteriaList = new ArrayList<>();
+
+        if (criteria.getAuthor() != null && !criteria.getAuthor().isEmpty()) {
+            criteriaList.add(Criteria.where("author").is(criteria.getAuthor()));
+        }
+
+        // במקום להוסיף שני תנאים נפרדים על publishYear, נשתמש בקריטריון אחד המשלב את שניהם
+        if (criteria.getPublishYearFrom() != null || criteria.getPublishYearTo() != null) {
+            Criteria publishYearCriteria = Criteria.where("publishYear");
+
+            if (criteria.getPublishYearFrom() != null) {
+                publishYearCriteria = publishYearCriteria.gte(criteria.getPublishYearFrom());
+            }
+
+            if (criteria.getPublishYearTo() != null) {
+                publishYearCriteria = publishYearCriteria.lte(criteria.getPublishYearTo());
+            }
+
+            criteriaList.add(publishYearCriteria);
+        }
+
+        if (criteria.getGenre() != null && !criteria.getGenre().isEmpty()) {
+            criteriaList.add(Criteria.where("genre").is(criteria.getGenre()));
+        }
+
+        if (criteria.getAvailable() != null) {
+            criteriaList.add(Criteria.where("available").is(criteria.getAvailable()));
+        }
+
+        if (criteria.getTitleContains() != null && !criteria.getTitleContains().isEmpty()) {
+            criteriaList.add(Criteria.where("title").regex(criteria.getTitleContains(), "i"));
+        }
+
+        if (criteria.getMinRating() != null) {
+            criteriaList.add(Criteria.where("rating").gte(criteria.getMinRating()));
+        }
+
+        // רק אם יש לנו קריטריונים, נוסיף אותם לשאילתה
+        if (!criteriaList.isEmpty()) {
+            // שימוש ב-andOperator כדי לחבר את כל הקריטריונים ב-AND
+            allCriteria = allCriteria.andOperator(criteriaList.toArray(new Criteria[0]));
+        }
+
+        Query query = new Query(allCriteria);
+        List<Book> books = mongoTemplate.find(query, Book.class);
+        return bookMapper.toDtoList(books);
     }
 }

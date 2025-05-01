@@ -2,6 +2,7 @@ package org.example.solution.controller;
 
 import jakarta.validation.Valid;
 import org.example.solution.dto.BookDto;
+import org.example.solution.dto.BookSearchCriteria;
 import org.example.solution.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -103,6 +104,12 @@ public class BookController {
     @GetMapping("/search/rating")
     public ResponseEntity<List<BookDto>> getAvailableBooksWithMinRating(@RequestParam Integer rating) {
         List<BookDto> books = bookService.getAvailableBooksWithMinRating(rating);
+        return ResponseEntity.ok(books);
+    }
+
+    @PostMapping("/search/advanced")
+    public ResponseEntity<List<BookDto>> searchBooks(@RequestBody BookSearchCriteria criteria) {
+        List<BookDto> books = bookService.searchBooks(criteria);
         return ResponseEntity.ok(books);
     }
 }

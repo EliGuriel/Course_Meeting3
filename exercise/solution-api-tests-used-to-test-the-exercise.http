@@ -1,0 +1,224 @@
+## Library Management API Test HTTP File
+#
+#This HTTP file contains all possible queries for the MongoDB Library Management exercise:
+#
+### Covered functionality:
+#
+#### Stage 1 (Basic)
+#* [x] Create books (5 different examples)
+#* [x] Get all books
+#* [x] Get book by ID
+#* [x] Update an existing book
+#* [x] Delete a book
+#
+#### Stage 2 (Basic queries as defined in the exercise)
+#* [x] Get books by author: `GET /api/books/author/{author}`
+#* [x] Get available books by genre: `GET /api/books/genre/{genre}/available`
+#* [x] Get books by tag: `GET /api/books/tag/{tag}`
+#* [x] Toggle book availability: `PATCH /api/books/{id}/toggle-availability`
+#
+#### Stage B (Extended queries - after learning MongoDB Query Language)
+#* [x] Get books from a specific publication year and later: `GET /api/books/year/{year}/and-later`
+#* [x] Search books by part of the title: `GET /api/books/search/title?query={query}`
+#* [x] Search available books with minimum rating: `GET /api/books/search/rating?rating={rating}`
+#
+#### Extra Challenge
+#* [x] Advanced search with multiple criteria: `POST /api/books/search/advanced`
+#    * Including search by: author, year range, genre, availability, title part, minimum rating
+#
+#The file is organized in a logical order that supports the workflow - first creating books,
+#then using them in the rest of the queries. All stages and requirements from the original exercise and extensions are fully covered.
+#
+#This is a very effective tool for testing the application during development and demonstrating functionality upon completion of the exercise.
+
+### Global Variables
+@hostname = localhost
+@port = 8080
+@baseUrl = http://{{hostname}}:{{port}}/api/books
+@contentType = application/json
+
+### (Step 1) Create a new book
+POST {{baseUrl}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Harry Potter and the Philosopher's Stone",
+  "author": "J.K. Rowling",
+  "publishYear": 1997,
+  "genre": "Fantasy",
+  "available": true,
+  "tags": ["fantasy", "magic", "children", "adventure"],
+  "rating": 5
+}
+
+### (Step 1) Create another book
+POST {{baseUrl}}
+Content-Type: {{contentType}}
+
+{
+  "title": "1984",
+  "author": "George Orwell",
+  "publishYear": 1949,
+  "genre": "Dystopian",
+  "available": true,
+  "tags": ["dystopian", "politics", "sci-fi"],
+  "rating": 5
+}
+
+### (Step 1) Create one more book
+POST {{baseUrl}}
+Content-Type: {{contentType}}
+
+{
+  "title": "The Lord of the Rings",
+  "author": "J.R.R. Tolkien",
+  "publishYear": 1954,
+  "genre": "Fantasy",
+  "available": false,
+  "tags": ["fantasy", "adventure", "mythology"],
+  "rating": 5
+}
+
+### (Step 1) Create another book
+POST {{baseUrl}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Dune",
+  "author": "Frank Herbert",
+  "publishYear": 1965,
+  "genre": "Science Fiction",
+  "available": true,
+  "tags": ["sci-fi", "politics", "religion"],
+  "rating": 4
+}
+
+### (Step 1) Create another book
+POST {{baseUrl}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Murder on the Orient Express",
+  "author": "Agatha Christie",
+  "publishYear": 1934,
+  "genre": "Mystery",
+  "available": true,
+  "tags": ["mystery", "detective"],
+  "rating": 4
+}
+
+### (Step 2) Get all books
+GET {{baseUrl}}
+
+### (Step 3) Get book by ID
+# Replace the ID in the URL with a real ID that was created
+GET {{baseUrl}}/REPLACE_WITH_REAL_ID
+
+### (Step 4) Update a book
+# Replace the ID in the URL with a real ID that was created
+PUT {{baseUrl}}/REPLACE_WITH_REAL_ID
+Content-Type: {{contentType}}
+
+{
+  "title": "Harry Potter and the Philosopher's Stone",
+  "author": "J.K. Rowling",
+  "publishYear": 1997,
+  "genre": "Fantasy",
+  "available": false,
+  "tags": ["fantasy", "magic", "children", "adventure", "school"],
+  "rating": 5
+}
+
+### (Step 5) Toggle book availability
+# Replace the ID in the URL with a real ID that was created
+PATCH {{baseUrl}}/REPLACE_WITH_REAL_ID/toggle-availability
+
+### (Step 6) Delete a book
+# Replace the ID in the URL with a real ID that was created
+DELETE {{baseUrl}}/REPLACE_WITH_REAL_ID
+
+### (Step 7) Get books by author
+GET {{baseUrl}}/author/J.K. Rowling
+
+### (Step 8) Get available books by genre
+GET {{baseUrl}}/genre/Fantasy/available
+
+### (Step 9) Get books by tag
+GET {{baseUrl}}/tag/sci-fi
+
+### (Phase 2 - Extended Queries) Get books from a certain year and later
+# Added after learning MongoDB Query Language
+GET {{baseUrl}}/year/1950/and-later
+
+
+### ***********************************************************************
+### (Phase 2 - Extended Queries)
+### ***********************************************************************
+
+### (Phase 2 - Extended Queries) Search books by title part
+# Added after learning MongoDB Query Language
+GET {{baseUrl}}/search/title?query=Harry
+
+### (Phase 2 - Extended Queries) Search available books with minimum rating
+# Added after learning MongoDB Query Language
+GET {{baseUrl}}/search/rating?rating=4
+
+### (Extra Challenge) Advanced search with multiple criteria
+### {
+#  "author": null,           // אין חיפוש לפי מחבר ספציפי (מכיוון שזה null)
+#  "publishYearFrom": 1950,  // ספרים שפורסמו משנת 1950 ומעלה
+#  "publishYearTo": 2000,    // ספרים שפורסמו עד שנת 2000
+#  "genre": "Fantasy",       // ספרים בז'אנר פנטזיה בלבד
+#  "available": true,        // רק ספרים שזמינים להשאלה
+#  "titleContains": null,    // אין חיפוש לפי מילים בכותרת (מכיוון שזה null)
+#  "minRating": 4            // ספרים עם דירוג של 4 ומעלה
+#}
+POST {{baseUrl}}/search/advanced
+Content-Type: application/json
+
+{
+  "author": null,
+  "publishYearFrom": 1950,
+  "publishYearTo": 2000,
+  "genre": "Fantasy",
+  "available": true,
+  "titleContains": null,
+  "minRating": 4
+}
+
+###
+
+## Response Analysis
+#
+#```json
+#[
+#  {
+#    "id": "{{bookId}}",
+#    "title": "Harry Potter and the Philosopher's Stone",
+#    "author": "J.K. Rowling",
+#    "publishYear": 1997,
+#    "genre": "Fantasy",
+#    "available": true,
+#    "tags": [
+#      "fantasy",
+#      "magic",
+#      "children",
+#      "adventure",
+#      "school"
+#    ],
+#    "rating": 5
+#  }
+#]
+#```
+#
+#The book "Harry Potter and the Philosopher's Stone" appears in the results because it meets all the search criteria you defined:
+#1. Publication year: 1997 (between 1950 and 2000) ✓
+#2. Genre: Fantasy ✓
+#3. Availability: true ✓
+#4. Rating: 5 (greater than or equal to 4) ✓
+#
+#This is exactly what we wanted to achieve with the advanced search - the ability to filter books by multiple criteria simultaneously. The implementation works as expected!
+#
+#The improvements we made to the code successfully resolved the issue with combining two conditions on the same field (publishYear). As we can see, the complex search conditions work well and return the precise results we expected.
+#
+#Now you have a complete library application with advanced search capabilities, as required by the additional challenge portion of the exercise.
