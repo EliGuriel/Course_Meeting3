@@ -1,0 +1,426 @@
+# API Tests for Stage3 MongoDB Application - Student Registration System
+
+### Variables
+@baseUrl = http://localhost:8080/api
+@studentsUrl = {{baseUrl}}/students
+@coursesUrl = {{baseUrl}}/courses
+@enrollmentsUrl = {{baseUrl}}/enrollments
+
+### ============================================================================
+### STUDENT ENDPOINTS
+### ============================================================================
+
+### Get all students
+GET {{studentsUrl}}
+Accept: application/json
+
+### Get students with query parameters (NEW)
+# Query parameter approach for better Hebrew support
+GET {{studentsUrl}}?lastName=כהן
+Accept: application/json
+
+### Get students by year of study (query parameter)
+GET {{studentsUrl}}?yearOfStudy=2
+Accept: application/json
+
+### Get students with GPA greater than (query parameter)
+GET {{studentsUrl}}?minGpa=3.5
+Accept: application/json
+
+### Get a specific student by ID
+# Replace with an actual ID after creating a student
+GET {{studentsUrl}}/studentId
+Accept: application/json
+
+### Get a student with their courses
+# Replace with an actual ID
+GET {{studentsUrl}}/studentId/with-courses
+Accept: application/json
+
+### Get students without courses
+GET {{studentsUrl}}/without-courses
+Accept: application/json
+
+### Create a new student
+POST {{studentsUrl}}
+Content-Type: application/json
+
+{
+  "firstName": "דניאל",
+  "lastName": "לוי",
+  "email": "daniel.levy@example.com",
+  "yearOfStudy": 2,
+  "gpa": 3.6
+}
+
+### Create another student
+POST {{studentsUrl}}
+Content-Type: application/json
+
+{
+  "firstName": "מיכל",
+  "lastName": "כהן",
+  "email": "michal.cohen@example.com",
+  "yearOfStudy": 3,
+  "gpa": 3.8
+}
+
+### Create a student with validation error (invalid email)
+POST {{studentsUrl}}
+Content-Type: application/json
+
+{
+  "firstName": "יוסי",
+  "lastName": "גולדברג",
+  "email": "invalid-email",
+  "yearOfStudy": 1,
+  "gpa": 3.2
+}
+
+### Create a student with validation error (invalid year of study)
+POST {{studentsUrl}}
+Content-Type: application/json
+
+{
+  "firstName": "שרה",
+  "lastName": "אברהם",
+  "email": "sarah.abraham@example.com",
+  "yearOfStudy": 10,
+  "gpa": 3.4
+}
+
+### Update a student
+PUT {{studentsUrl}}/studentId
+Content-Type: application/json
+
+{
+  "firstName": "דניאל",
+  "lastName": "לוי-כהן",
+  "email": "daniel.levy@example.com",
+  "yearOfStudy": 3,
+  "gpa": 3.7
+}
+
+### Update a grade for a student in a course (NEW improved method)
+# The new method uses a JSON body, which handles special characters like '+' properly
+PUT {{enrollmentsUrl}}/student/studentId/course/courseId/update-grade
+Content-Type: application/json
+
+{
+  "grade": "B+",
+  "score": 87
+}
+
+### Get students by last name
+GET {{studentsUrl}}/?lastName=כהן
+Accept: application/json
+
+
+### Get students by last name (original path - still works)
+GET {{studentsUrl}}/last-name/%D7%9B%D7%94%D7%9F
+Accept: application/json
+
+### Get students by year of study (original path - still works)
+GET {{studentsUrl}}/year/2
+Accept: application/json
+
+### Get courses for a specific student
+GET {{studentsUrl}}/studentId/courses
+Accept: application/json
+
+### Delete a student
+# DELETE {{studentsUrl}}/studentId
+
+### ============================================================================
+### COURSE ENDPOINTS
+### ============================================================================
+
+### Get all courses
+GET {{coursesUrl}}
+Accept: application/json
+
+### Get courses with query parameters (NEW)
+# Query parameter approach for better Hebrew support
+GET {{coursesUrl}}?department=מדעי המחשב
+Accept: application/json
+
+### Get courses by credits (query parameter)
+GET {{coursesUrl}}?credits=4
+Accept: application/json
+
+### Search courses by name (query parameter)
+GET {{coursesUrl}}?name=מבוא
+Accept: application/json
+
+### Get a specific course by ID
+# Replace with an actual ID after creating a course
+GET {{coursesUrl}}/courseId
+Accept: application/json
+
+### Get a course with its students
+# Replace with an actual ID
+GET {{coursesUrl}}/courseId/with-students
+Accept: application/json
+
+### Create a new course
+POST {{coursesUrl}}
+Content-Type: application/json
+
+{
+  "name": "מבוא למדעי המחשב",
+  "description": "קורס בסיסי בתכנות ואלגוריתמים",
+  "department": "מדעי המחשב",
+  "credits": 4,
+  "startDate": "2023-10-15",
+  "endDate": "2024-01-31"
+}
+
+### Create another course
+POST {{coursesUrl}}
+Content-Type: application/json
+
+{
+  "name": "אלגברה לינארית",
+  "description": "קורס בסיסי במתמטיקה",
+  "department": "מתמטיקה",
+  "credits": 3,
+  "startDate": "2023-10-15",
+  "endDate": "2024-01-31"
+}
+
+### Create a course with validation error (missing name)
+POST {{coursesUrl}}
+Content-Type: application/json
+
+{
+  "description": "קורס חסר שם",
+  "department": "מדעי המחשב",
+  "credits": 4
+}
+
+### Update a course
+PUT {{coursesUrl}}/courseId
+Content-Type: application/json
+
+{
+  "name": "מבוא למדעי המחשב - מורחב",
+  "description": "קורס בסיסי מורחב בתכנות ואלגוריתמים",
+  "department": "מדעי המחשב",
+  "credits": 5,
+  "startDate": "2023-10-15",
+  "endDate": "2024-02-15"
+}
+
+### Get courses by department (original path - still works)
+GET {{coursesUrl}}/department/%D7%9E%D7%93%D7%A2%D7%99%20%D7%94%D7%9E%D7%97%D7%A9%D7%91
+Accept: application/json
+
+### Get courses by credits (original path - still works)
+GET {{coursesUrl}}/credits/4
+Accept: application/json
+
+### Search courses by name (original path - still works)
+GET {{coursesUrl}}/search?name=מבוא
+Accept: application/json
+
+### Get courses without students
+GET {{coursesUrl}}/without-students
+Accept: application/json
+
+### Get students for a course
+GET {{coursesUrl}}/courseId/students
+Accept: application/json
+
+### Delete a course
+# DELETE {{coursesUrl}}/courseId
+
+### ============================================================================
+### ENROLLMENT ENDPOINTS
+### ============================================================================
+
+### Get all enrollments
+GET {{enrollmentsUrl}}
+Accept: application/json
+
+### Get enrollments with query parameters (NEW)
+# Query parameter approach for filtering
+GET {{enrollmentsUrl}}?studentId=studentId
+Accept: application/json
+
+### Get enrollments by course (query parameter)
+GET {{enrollmentsUrl}}?courseId=courseId
+Accept: application/json
+
+### Get enrollments by status (query parameter)
+GET {{enrollmentsUrl}}?status=ACTIVE
+Accept: application/json
+
+### Get a specific enrollment by ID
+# Replace with an actual ID after creating an enrollment
+GET {{enrollmentsUrl}}/enrollmentId
+Accept: application/json
+
+### Get enrollment by student and course
+GET {{enrollmentsUrl}}/student/studentId/course/courseId
+Accept: application/json
+
+### Enroll a student in a course
+POST {{enrollmentsUrl}}/student/studentId/course/courseId
+Content-Type: application/json
+
+### Update an enrollment
+PUT {{enrollmentsUrl}}/enrollmentId
+Content-Type: application/json
+
+{
+  "grade": "A",
+  "score": 92.5,
+  "status": "COMPLETED",
+  "notes": "Excellent performance"
+}
+
+### Update a grade for a student in a course (original method)
+# CAUTION: The '+' in "B+" needs to be URL encoded as %2B to avoid being interpreted as a space
+PUT {{enrollmentsUrl}}/student/studentId/course/courseId/grade?grade=B%2B&score=87
+Content-Type: application/json
+
+### Update a grade for a student in a course (NEW improved method)
+# The new method uses a JSON body, which handles special characters like '+' properly
+PUT {{enrollmentsUrl}}/student/studentId/course/courseId/update-grade
+Content-Type: application/json
+
+{
+  "grade": "B+",
+  "score": 87
+}
+
+### Unenroll a student from a course
+# DELETE {{enrollmentsUrl}}/student/studentId/course/courseId
+
+### Get enrollments for a student (original path - still works)
+GET {{enrollmentsUrl}}/student/studentId
+Accept: application/json
+
+### Get enrollments for a course (original path - still works)
+GET {{enrollmentsUrl}}/course/courseId
+Accept: application/json
+
+### Get enrollments by status (original path - still works)
+GET {{enrollmentsUrl}}/status/ACTIVE
+Accept: application/json
+
+### ============================================================================
+### COMPLEX SCENARIOS
+### ============================================================================
+
+### Create a student for complex scenarios
+POST {{studentsUrl}}
+Content-Type: application/json
+
+{
+  "firstName": "רון",
+  "lastName": "אבני",
+  "email": "ron.avni@example.com",
+  "yearOfStudy": 4,
+  "gpa": 3.9
+}
+
+### Create multiple courses for complex scenarios
+# Course 1
+POST {{coursesUrl}}
+Content-Type: application/json
+
+{
+  "name": "מבני נתונים",
+  "description": "קורס מתקדם במבני נתונים ואלגוריתמים",
+  "department": "מדעי המחשב",
+  "credits": 4,
+  "startDate": "2023-10-15",
+  "endDate": "2024-01-31"
+}
+
+### Course 2
+POST {{coursesUrl}}
+Content-Type: application/json
+
+{
+  "name": "סטטיסטיקה ואלגברה",
+  "description": "קורס בסיסי בסטטיסטיקה ואלגברה",
+  "department": "מתמטיקה",
+  "credits": 3,
+  "startDate": "2023-10-15",
+  "endDate": "2024-01-31"
+}
+
+### Course 3
+POST {{coursesUrl}}
+Content-Type: application/json
+
+{
+  "name": "תכנות מונחה עצמים",
+  "description": "קורס מתקדם בתכנות מונחה עצמים",
+  "department": "מדעי המחשב",
+  "credits": 4,
+  "startDate": "2023-10-15",
+  "endDate": "2024-01-31"
+}
+
+### Enroll in multiple courses
+### Enrollment 1
+POST {{enrollmentsUrl}}/student/scenarioStudentId/course/scenarioCourse1Id
+Content-Type: application/json
+
+### Enrollment 2
+POST {{enrollmentsUrl}}/student/scenarioStudentId/course/scenarioCourse2Id
+Content-Type: application/json
+
+### Enrollment 3
+POST {{enrollmentsUrl}}/student/scenarioStudentId/course/scenarioCourse3Id
+Content-Type: application/json
+
+### Update grades for enrollments - using the improved method with request body
+PUT {{enrollmentsUrl}}/student/scenarioStudentId/course/scenarioCourse1Id/update-grade
+Content-Type: application/json
+
+{
+  "grade": "A",
+  "score": 95
+}
+
+### Update grades for enrollments - using the improved method with request body
+PUT {{enrollmentsUrl}}/student/scenarioStudentId/course/scenarioCourse2Id/update-grade
+Content-Type: application/json
+
+{
+  "grade": "B+",
+  "score": 87
+}
+
+### Get student with all courses
+GET {{studentsUrl}}/scenarioStudentId/with-courses
+Accept: application/json
+
+### Get all enrollments for the student
+GET {{enrollmentsUrl}}?studentId=scenarioStudentId
+Accept: application/json
+
+### ============================================================================
+### CLEANUP (uncomment to run)
+### ============================================================================
+
+### Delete enrollments
+# DELETE {{enrollmentsUrl}}/student/studentId/course/courseId
+# DELETE {{enrollmentsUrl}}/student/scenarioStudentId/course/scenarioCourse1Id
+# DELETE {{enrollmentsUrl}}/student/scenarioStudentId/course/scenarioCourse2Id
+# DELETE {{enrollmentsUrl}}/student/scenarioStudentId/course/scenarioCourse3Id
+
+### Delete courses
+# DELETE {{coursesUrl}}/courseId
+# DELETE {{coursesUrl}}/scenarioCourse1Id
+# DELETE {{coursesUrl}}/scenarioCourse2Id
+# DELETE {{coursesUrl}}/scenarioCourse3Id
+
+### Delete students
+# DELETE {{studentsUrl}}/studentId
+# DELETE {{studentsUrl}}/secondStudentId
+# DELETE {{studentsUrl}}/scenarioStudentId

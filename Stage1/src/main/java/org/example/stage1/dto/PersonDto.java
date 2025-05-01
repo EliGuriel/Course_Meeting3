@@ -1,0 +1,34 @@
+package org.example.stage1.dto;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.example.stage1.model.Address;
+
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class PersonDto {
+    private String personId;
+    
+    @NotBlank(message = "First name is required")
+    private String firstName;
+    
+    @NotBlank(message = "Last name is required")
+    private String lastName;
+    
+    @NotNull(message = "Age is required")
+    @Min(value = 0, message = "Age must be positive")
+    private Integer age;
+    
+    private List<String> hobbies;
+    
+    @Valid
+    private List<Address> addresses;
+}

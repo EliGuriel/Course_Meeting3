@@ -1,0 +1,327 @@
+# API Tests for Stage2 MongoDB Application
+
+### Variables
+@baseUrl = http://localhost:8080/api
+@personsUrl = {{baseUrl}}/persons
+@projectsUrl = {{baseUrl}}/projects
+
+### ============================================================================
+### PERSON ENDPOINTS
+### ============================================================================
+
+### Get all persons
+GET {{personsUrl}}
+Accept: application/json
+
+### Get a specific person by ID
+# Replace with an actual ID after creating a person
+GET {{personsUrl}}/{{personId}}
+Accept: application/json
+
+### Get a person with their projects
+# Replace with an actual ID
+GET {{personsUrl}}/{{personId}}/with-projects
+Accept: application/json
+
+### Get persons without projects
+GET {{personsUrl}}/without-projects
+Accept: application/json
+
+### Create a new person
+POST {{personsUrl}}
+Content-Type: application/json
+
+{
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "age": 30,
+  "email": "israel.israeli@example.com",
+  "hobbies": [
+    "קריאה",
+    "טיולים",
+    "בישול"
+  ],
+  "addresses": [
+    {
+      "street": "123 Main St",
+      "city": "Tel Aviv",
+      "state": "IL",
+      "zip": "12345"
+    },
+    {
+      "street": "456 Oak St",
+      "city": "Jerusalem",
+      "state": "IL",
+      "zip": "54321"
+    }
+  ]
+}
+
+
+### Create another person for testing multiple persons
+POST {{personsUrl}}
+Content-Type: application/json
+
+{
+  "firstName": "דנה",
+  "lastName": "כהן",
+  "age": 28,
+  "email": "dana.cohen@example.com",
+  "hobbies": [
+    "ריקוד",
+    "אפייה",
+    "צילום"
+  ],
+  "addresses": [
+    {
+      "street": "789 Pine St",
+      "city": "Haifa",
+      "state": "IL",
+      "zip": "67890"
+    }
+  ]
+}
+
+
+### Create a person with validation error (missing email)
+POST {{personsUrl}}
+Content-Type: application/json
+
+{
+  "firstName": "יוסי",
+  "lastName": "לוי",
+  "age": 35,
+  "hobbies": ["ספורט"]
+}
+
+### Create a person with validation error (invalid address)
+POST {{personsUrl}}
+Content-Type: application/json
+
+{
+  "firstName": "נועה",
+  "lastName": "ברק",
+  "age": 27,
+  "email": "noa.barak@example.com",
+  "hobbies": ["מוזיקה"],
+  "addresses": [
+    {
+      "street": "123 Main St",
+      "city": "Tel Aviv",
+      "state": "Israel",
+      "zip": "invalid-zip"
+    }
+  ]
+}
+
+### Update a person
+PUT {{personsUrl}}/{{personId}}
+Content-Type: application/json
+
+{
+  "firstName": "ישראל",
+  "lastName": "ישראלי-כהן",
+  "age": 32,
+  "email": "israel.israeli@example.com",
+  "hobbies": [
+    "קריאה",
+    "טיולים",
+    "צילום"
+  ],
+  "addresses": [
+    {
+      "street": "123 Main St",
+      "city": "Tel Aviv",
+      "state": "IL",
+      "zip": "12345"
+    },
+    {
+      "street": "789 New St",
+      "city": "Tel Aviv",
+      "state": "IL",
+      "zip": "54321"
+    }
+  ]
+}
+
+### Delete a person
+# This will be used at the end of testing
+# DELETE {{personsUrl}}/{{personId}}
+
+### ============================================================================
+### PROJECT ENDPOINTS
+### ============================================================================
+
+### Get all projects
+GET {{projectsUrl}}
+Accept: application/json
+
+### Get a specific project by ID
+# Replace with an actual ID after creating a project
+GET {{projectsUrl}}/{{projectId}}
+Accept: application/json
+
+### Get projects for a specific person
+GET {{projectsUrl}}/person/{{personId}}
+Accept: application/json
+
+### Create a new project
+POST {{projectsUrl}}
+Content-Type: application/json
+
+{
+  "name": "פרויקט לדוגמה",
+  "description": "זה פרויקט לצורך הדגמה בלבד",
+  "startDate": "2023-01-15",
+  "endDate": "2023-12-31",
+  "status": "ACTIVE"
+}
+
+
+### Create project with person assigned
+POST {{projectsUrl}}
+Content-Type: application/json
+
+{
+  "name": "פרויקט משותף",
+  "description": "פרויקט שמשויך לאדם מסוים",
+  "startDate": "2023-02-01",
+  "endDate": "2023-10-31",
+  "status": "ACTIVE",
+  "personId": "{{personId}}"
+}
+
+
+### Create project with validation error (missing required fields)
+POST {{projectsUrl}}
+Content-Type: application/json
+
+{
+  "description": "פרויקט חסר",
+  "startDate": "2023-03-01"
+}
+
+### Update a project
+PUT {{projectsUrl}}/{{projectId}}
+Content-Type: application/json
+
+{
+  "name": "פרויקט לדוגמה - מעודכן",
+  "description": "זה פרויקט שעודכן לצורך הדגמה",
+  "startDate": "2023-01-15",
+  "endDate": "2024-01-31",
+  "status": "ACTIVE"
+}
+
+### Assign project to person
+PUT {{projectsUrl}}/{{projectId}}/assign-person/{{personId}}
+Content-Type: application/json
+
+### Remove person from project
+DELETE {{projectsUrl}}/{{projectId}}/remove-person
+
+### Get person for a project
+GET {{projectsUrl}}/{{project2Id}}/person
+Accept: application/json
+
+### Delete a project
+# This will be used at the end of testing
+# DELETE {{projectsUrl}}/{{projectId}}
+
+### ============================================================================
+### COMPLEX SCENARIOS
+### ============================================================================
+
+### Create a person for scenarios
+POST {{personsUrl}}
+Content-Type: application/json
+
+{
+  "firstName": "מיכל",
+  "lastName": "אברהם",
+  "age": 35,
+  "email": "michal.avraham@example.com",
+  "hobbies": [
+    "אומנות",
+    "נגינה",
+    "בישול"
+  ],
+  "addresses": [
+    {
+      "street": "15 Elm St",
+      "city": "Ramat Gan",
+      "state": "IL",
+      "zip": "52521"
+    }
+  ]
+}
+
+
+### Create multiple projects for the same person
+# Project 1
+POST {{projectsUrl}}
+Content-Type: application/json
+
+{
+  "name": "פרויקט A",
+  "description": "הפרויקט הראשון של מיכל",
+  "startDate": "2023-01-10",
+  "endDate": "2023-03-31",
+  "status": "COMPLETED",
+  "personId": "{{personScenarioId}}"
+}
+
+
+
+### Project 2
+POST {{projectsUrl}}
+Content-Type: application/json
+
+{
+  "name": "פרויקט B",
+  "description": "הפרויקט השני של מיכל",
+  "startDate": "2023-04-01",
+  "endDate": "2023-06-30",
+  "status": "COMPLETED",
+  "personId": "{{personScenarioId}}"
+}
+
+
+
+### Project 3
+POST {{projectsUrl}}
+Content-Type: application/json
+
+{
+  "name": "פרויקט C",
+  "description": "הפרויקט השלישי של מיכל",
+  "startDate": "2023-07-01",
+  "status": "ACTIVE",
+  "personId": "{{personScenarioId}}"
+}
+
+
+
+### Get person with all projects
+GET {{personsUrl}}/{{personScenarioId}}/with-projects
+Accept: application/json
+
+### Get all projects for a person
+GET {{projectsUrl}}/person/{{personScenarioId}}
+Accept: application/json
+
+### ============================================================================
+### CLEANUP (uncomment to run)
+### ============================================================================
+
+### Delete projects
+# DELETE {{projectsUrl}}/{{projectId}}
+# DELETE {{projectsUrl}}/{{project2Id}}
+# DELETE {{projectsUrl}}/{{projectAId}}
+# DELETE {{projectsUrl}}/{{projectBId}}
+# DELETE {{projectsUrl}}/{{projectCId}}
+
+### Delete persons
+# DELETE {{personsUrl}}/{{personId}}
+# DELETE {{personsUrl}}/{{person2Id}}
+# DELETE {{personsUrl}}/{{personScenarioId}}

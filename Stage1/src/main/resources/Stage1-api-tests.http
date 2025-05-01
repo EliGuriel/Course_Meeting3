@@ -1,0 +1,208 @@
+# API Tests for Person MongoDB Application
+
+### Get all persons
+GET http://localhost:8080/persons
+Accept: application/json
+
+### Get a specific person by ID
+# Replace '{personId}' with an actual ID after creating a person
+GET http://localhost:8080/persons/{{personId}}
+Accept: application/json
+
+### Create a new person
+POST http://localhost:8080/persons
+Content-Type: application/json
+
+{
+  "firstName": "ישראל",
+  "lastName": "ישראלי",
+  "age": 30,
+  "hobbies": [
+    "קריאה",
+    "טיולים",
+    "בישול"
+  ],
+  "addresses": [
+    {
+      "street": "רחוב הרצל 123",
+      "city": "תל אביב",
+      "state": "תל אביב",
+      "zip": "6120101"
+    },
+    {
+      "street": "רחוב ביאליק 45",
+      "city": "רמת גן",
+      "state": "תל אביב",
+      "zip": "5252345"
+    }
+  ]
+}
+
+### Create person with minimal data
+POST http://localhost:8080/persons
+Content-Type: application/json
+
+{
+  "firstName": "דן",
+  "lastName": "כהן",
+  "age": 25
+}
+
+### Create person with validation error (missing required fields)
+POST http://localhost:8080/persons
+Content-Type: application/json
+
+{
+  "firstName": "יוסי",
+  "lastName": "",
+  "age": null
+}
+
+### Update a person
+# Replace '{personId}' with an actual ID
+PUT http://localhost:8080/persons/{{personId}}
+Content-Type: application/json
+
+{
+  "firstName": "ישראל",
+  "lastName": "ישראלי-לוי",
+  "age": 32,
+  "hobbies": [
+    "קריאה",
+    "טיולים",
+    "צילום"
+  ],
+  "addresses": [
+    {
+      "street": "רחוב הרצל 123",
+      "city": "תל אביב",
+      "state": "תל אביב",
+      "zip": "6120101"
+    },
+    {
+      "street": "רחוב גורדון 78",
+      "city": "תל אביב",
+      "state": "תל אביב",
+      "zip": "6329834"
+    }
+  ]
+}
+
+### Delete a person
+# Replace '{personId}' with an actual ID
+DELETE http://localhost:8080/persons/{{personId}}
+
+### Try to get a deleted or non-existent person (should return 404)
+# Replace '{nonExistentId}' with an ID that doesn't exist
+GET http://localhost:8080/persons/nonExistentId
+Accept: application/json
+
+### Create person with negative age (validation error)
+POST http://localhost:8080/persons
+Content-Type: application/json
+
+{
+  "firstName": "נגה",
+  "lastName": "לוי",
+  "age": -5,
+  "hobbies": [
+    "ריקוד",
+    "מוזיקה"
+  ]
+}
+
+### Create English person example
+POST http://localhost:8080/persons
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "age": 28,
+  "hobbies": [
+    "reading",
+    "gaming",
+    "hiking"
+  ],
+  "addresses": [
+    {
+      "street": "123 Main St",
+      "city": "Boston",
+      "state": "MA",
+      "zip": "02108"
+    }
+  ]
+}
+
+### Create a person with multiple addresses
+POST http://localhost:8080/persons
+Content-Type: application/json
+
+{
+  "firstName": "מיכל",
+  "lastName": "אברהם",
+  "age": 35,
+  "hobbies": [
+    "ציור",
+    "פיסול",
+    "יוגה"
+  ],
+  "addresses": [
+    {
+      "street": "רחוב אלנבי 45",
+      "city": "תל אביב",
+      "state": "תל אביב",
+      "zip": "6522045"
+    },
+    {
+      "street": "רחוב החשמונאים 70",
+      "city": "תל אביב",
+      "state": "תל אביב",
+      "zip": "6713203"
+    },
+    {
+      "street": "רחוב הנביאים 12",
+      "city": "ירושלים",
+      "state": "ירושלים",
+      "zip": "9510632"
+    }
+  ]
+}
+
+### Using environment variables - create a person and store ID
+# This will save the personId from the response for use in subsequent requests
+POST http://localhost:8080/persons
+Content-Type: application/json
+
+{
+  "firstName": "רחל",
+  "lastName": "לוין",
+  "age": 42,
+  "hobbies": ["שחייה", "קריאה"]
+}
+
+> {%
+    client.global.set("newPersonId", response.body.personId);
+%}
+
+### Get the newly created person
+GET http://localhost:8080/persons/{{newPersonId}}
+Accept: application/json
+
+### Update the newly created person
+PUT http://localhost:8080/persons/{{newPersonId}}
+Content-Type: application/json
+
+{
+  "firstName": "רחל",
+  "lastName": "לוין-כהן",
+  "age": 43,
+  "hobbies": ["שחייה", "קריאה", "טיולים"]
+}
+
+### Delete the newly created person
+DELETE http://localhost:8080/persons/{{newPersonId}}
+
+### Verify the person was deleted (should return 404)
+GET http://localhost:8080/persons/{{newPersonId}}
+Accept: application/json

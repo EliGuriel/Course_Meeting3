@@ -1,0 +1,63 @@
+version: '3.8'
+
+# קובץ ה-Docker Compose זה מכיל את כל ההגדרות הנדרשות להפעלת MongoDB ו-MySQL בסביבת Docker.
+# אפשר להשתמש בו ישירות עם IntelliJ Ultimate.
+# הקובץ מגדיר:
+# 1. MongoDB:
+#    * תמונה: הגרסה העדכנית של MongoDB
+#    * פרטי התחברות: username=admin, password=admin
+#    * פורט: 27017 (רגיל)
+#    * נפח קבוע לשמירת נתונים
+# 2. MySQL:
+#    * תמונה: הגרסה העדכנית של MySQL
+#    * סיסמת root: admin
+#    * פורט: 3307 (חיצוני) → 3306 (פנימי)
+#    * נפח קבוע לשמירת נתונים
+# כמו כן הוגדרו בצורה נכונה:
+# * רשת משותפת לשני השירותים
+# * הגדרת restart במקרה של כשל
+#
+# להפעלה באמצעות IntelliJ Ultimate:
+# 1. יש לשמור את הקובץ כ-`docker-compose.yml`
+# 2. ב-IntelliJ, ניתן לפתוח את חלון ה-Services, ואז לחפש את Docker
+# 3. לחץ ימני על רכיב ה-Docker ובחר "Deploy 'docker-compose.yml'"
+#
+# אחרי שהשירותים יעלו, תוכל להגדיר חיבורים לבסיסי הנתונים ישירות מ-IntelliJ באמצעות חלון ה-Database:
+# * MongoDB: `mongodb://admin:admin@localhost:27017/admin`
+# * MySQL: `jdbc:mysql://localhost:3307` עם המשתמש root וסיסמה admin
+
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql-container
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+  mysql_data:
