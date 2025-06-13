@@ -136,6 +136,33 @@ public class BookController {
 
 ## שלב 8: הגדרת MongoDB
 
+</div>
+# Creating MongoDB in Docker:
+create a `docker-compose.yml` file in the root of your project with the following content:
+
+```yaml
+version: '3.8'
+
+services:
+mongodb:
+image: mongo:7.0
+container_name: mongodb-dev
+restart: unless-stopped
+ports:
+- "27017:27017"
+environment:
+MONGO_INITDB_ROOT_USERNAME: admin
+MONGO_INITDB_ROOT_PASSWORD: admin
+volumes:
+- mongodb_data:/data/db
+
+volumes:
+mongodb_data:
+
+```
+
+<div dir="rtl">
+
 הגדר את החיבור ל-MongoDB בקובץ `application.properties`.
 </div>
 

@@ -1,4 +1,6 @@
 HELP.md
+סוגי בסיסי נתונים NoSQL- הערות אנגלית מדריך מקיף כולל הסברי מושגים.md
+סוגי בסיסי נתונים NoSQL- הערות אנגלית מדריך מקיף.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
